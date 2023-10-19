@@ -1,0 +1,178 @@
+version: '3.8'
+services:
+  fluentd:
+    build: ./fluentd
+    container_name: fluentd
+    restart: always
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    ports:
+      - 24224:24224
+      - 24224:24224/udp
+    networks:
+      - fastapiserver_efk_net
+      - fastapiserver_tool_net
+    volumes:
+      - ./fluentd/conf/fluent.conf:/fluentd/etc/fluent.conf
+
+  elasticsearch:
+    image: elasticsearch:8.7.1
+    container_name: elasticsearch
+    mem_limit: 2024m
+    restart: always
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - ./es/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - fastapiserver_es_data:/usr/share/elasticsearch/data
+    networks:
+      - fastapiserver_efk_net
+
+  kibana:
+    image: kibana:8.7.1
+    container_name: kibana
+    restart: always
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    environment:
+      - TZ=Asia/Seoul
+      - SERVER_PUBLICBASEURL=${KIBANA_PUBLIC_BASE_URL}
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - fastapiserver_efk_net
+      - fastapiserver_tool_net
+
+  nginx_proxy_manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx_proxy_manager
+    restart: unless-stopped
+    depends_on:
+      - fluentd
+    ports:
+      - 80:80
+      - 81:81
+      - 443:443
+    volumes:
+      - fastapiserver_nginx_proxy_manager_data:/data
+      - fastapiserver_nginx_proxy_manager_letsencrypt:/etc/letsencrypt
+    networks:
+      - fastapiserver_service_net
+      - fastapiserver_tool_net
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+
+  mariadb:
+    image: mariadb:11.0.2
+    restart: always
+    container_name: fastapiserver-mariadb
+    depends_on:
+      - fluentd
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - 3306:3306
+    volumes:
+      - fastapiserver_mariadb_data:/var/lib/mysql  
+    networks:
+      - fastapiserver_service_net
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: fastapiserver-uptime-kuma
+    depends_on:
+      - fluentd
+    volumes:
+      - fastapiserver_uptime_kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+    networks:
+      - fastapiserver_service_net
+      - fastapiserver_tool_net
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+
+  jenkins:
+    build: ./jenkins
+    container_name: fastapiserver-jenkins
+    depends_on:
+      - fluentd
+    restart: always
+    user: root
+    volumes:
+      - fastapiserver_jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+  
+  heimdall:
+    image: lscr.io/linuxserver/heimdall
+    container_name: fastapiserver-heimdall
+    depends_on:
+      - fluentd
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Seoul
+    volumes:
+      - fastapiserver_heimdall_data:/config
+    restart: unless-stopped
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: "localhost:24224"
+
+  # # portainer service will be added later.
+  # portainer:
+  #   image: portainer/portainer-ce:alpine
+  #   container_name: portainer
+  #   restart: always
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - fastapiserver_portainer_data:/data
+
+networks:
+  fastapiserver_tool_net:
+    external: true  
+  fastapiserver_service_net:
+    external: true 
+  fastapiserver_efk_net:
+    external: true
+
+volumes:
+  fastapiserver_mariadb_data:   
+    external: true  
+  fastapiserver_uptime_kuma:   
+    external: true
+  fastapiserver_heimdall_data:
+    external: true
+  fastapiserver_jenkins_data:
+    external: true
+  fastapiserver_nginx_proxy_manager_data:
+    external: true
+  fastapiserver_nginx_proxy_manager_letsencrypt:
+    external: true
+  fastapiserver_es_data:
+    external: true
+  # fastapiserver_portainer_data:
+  #   external: true

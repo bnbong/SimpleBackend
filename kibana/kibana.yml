@@ -1,0 +1,10 @@
+server.host: "0.0.0.0"
+server.shutdownTimeout: "5s"
+elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+monitoring.ui.container.elasticsearch.enabled: true
+elasticsearch.ssl.verificationMode: "none"
+server.publicBaseUrl: ${SERVER_PUBLICBASEURL}
+
+# 초기 설정(비밀번호 생성) 전에는 계정 정보를 주석 처리 후 사용
+# elasticsearch.username: "kibana"
+# elasticsearch.password: "<here_your_password>"
