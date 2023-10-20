@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from pydantic import AnyUrl, BaseSettings, Field
+from pydantic import AnyUrl, Field
+from pydantic_settings import BaseSettings
 
 
 class AppSettings(BaseSettings):
@@ -31,7 +32,7 @@ class AppSettings(BaseSettings):
     )
 
     DATABASE_URI: AnyUrl = Field(
-        default="mysql+pymysql://fastapi:devpassword@localhost:3306/fastapidb",
+        default="mysql+pymysql://bnbong:password@localhost:3306/fastapidb",
         description="MariaDB connection URI.",
     )
     DATABASE_OPTIONS: Dict[str, Any] = Field(
@@ -46,4 +47,3 @@ class AppSettings(BaseSettings):
 
     class Config:
         env_file = ".env"
-        env_prefix = "fastapiapp_"

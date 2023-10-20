@@ -1,11 +1,7 @@
-from typing import TYPE_CHECKING
-
 from sqlalchemy import Column, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import object_session
-
-if TYPE_CHECKING:
-    from sqlalchemy.ext.declarative import DeclarativeMeta
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 Base: DeclarativeMeta = declarative_base()
 
