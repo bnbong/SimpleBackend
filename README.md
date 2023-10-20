@@ -15,11 +15,11 @@ Other features can be added later(not sure).
 
 # CheckLists
 
-- [] ElasticSearch 데이터 생명 주기 설정
-- [] SSL 인증서 발급 및 Https 적용
-- [] API 문서 작성 및 스키마 작성
-- [] Jenkins CI/CD 파이프라인 작성 및 확인
-- [] Scheduler worker 확인
+- [ ] ElasticSearch 데이터 생명 주기 설정
+- [ ] SSL 인증서 발급 및 Https 적용
+- [ ] API 문서 작성 및 스키마 작성
+- [ ] Jenkins CI/CD 파이프라인 작성 및 확인
+- [ ] Scheduler worker 확인
 
 
 # API Documents
