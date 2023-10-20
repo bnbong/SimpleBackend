@@ -4,6 +4,7 @@ import sys
 
 from src.core.settings import AppSettings
 
+
 LOGGING_FORMAT = (
     "[%(levelname)1.1s "
     "%(asctime)s "

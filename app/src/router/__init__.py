@@ -1,3 +1,5 @@
+from fastapi import APIRouter
+
 from .member import member_router
 
 router = APIRouter(prefix="/api/v1")

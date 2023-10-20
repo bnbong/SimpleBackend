@@ -31,22 +31,16 @@ class AppSettings(BaseSettings):
     )
 
     DATABASE_URI: AnyUrl = Field(
-        default="mariadb://fastapi:devpassword@127.0.0.1:35000/fastapi",  # TODO: change
+        default="mysql+pymysql://fastapi:devpassword@localhost:3306/fastapidb",
         description="MariaDB connection URI.",
     )
     DATABASE_OPTIONS: Dict[str, Any] = Field(
         default={
-            "connect_args": {
-                "keepalives": 1,
-                "keepalives_idle": 30,
-                "keepalives_interval": 15,
-            },
+            "pool_size": 10,
+            "max_overflow": 20,
+            "pool_recycle": 300,
             "pool_pre_ping": True,
-            "pool_recycle": 15 * 60,
-            "pool_size": 50,
-            "max_overflow": 50,
-            "pool_use_lifo": True,
-        },  # TODO: change
+        },
         description="MariaDB option to create a connection.",
     )
 

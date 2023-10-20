@@ -21,12 +21,9 @@ Other features can be added later(not sure).
 - [ ] Jenkins CI/CD 파이프라인 작성 및 확인
 - [ ] Scheduler worker 확인
 
-
-# API Documents
-Gitbook Link will be uploaded later.
-
-# Database Schema
-ERD will be uploaded later.
+# Application Documents
+ - README [Link](./app/README.md)
+ - Gitbook Link (will be added later)
 
 # How to run
 1. Clone this repository

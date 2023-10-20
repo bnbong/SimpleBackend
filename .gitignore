@@ -6,3 +6,12 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# IDE configuration files
+.idea/
+*.idea
+*.iml
+*.idea/
+app/*.iml
+app/.idea/
+app/.idea
