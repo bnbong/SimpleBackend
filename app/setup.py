@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# Backend Application의 패키지 정보를 정의한 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from setuptools import setup, find_packages
 
 setup(

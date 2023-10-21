@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# TestDatabase를 testcase에 연동시키는 로직을 정의한 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 

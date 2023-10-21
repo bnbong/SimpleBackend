@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# Member model의 CRUD를 담당하는 메서드를 정의한 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from typing import List, Optional
 
 from sqlalchemy.orm import Session

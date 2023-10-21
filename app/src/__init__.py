@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# FastAPI Application을 생성하는 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from __future__ import annotations
 
 import logging

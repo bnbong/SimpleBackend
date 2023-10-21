@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# Backend Application의 설정을 관리하는 파일입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from __future__ import annotations
 
 from typing import Any, Dict, Optional

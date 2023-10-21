@@ -1,6 +1,10 @@
+# --------------------------------------------------------------------------
+# Database 연결에 사용되는 로직을 정의한 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 
 from pydantic import AnyUrl
 

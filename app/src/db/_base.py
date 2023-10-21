@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# Model의 기본이 되는 Base 클래스를 정의한 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from sqlalchemy import Column, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy.orm import object_session, Session

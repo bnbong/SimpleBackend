@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# Member model의 schema를 정의한 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from pydantic import BaseModel
 
 
@@ -17,4 +22,4 @@ class Member(BaseModel):
     email: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True

@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# Member model의 API router을 정의한 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from logging import getLogger
 from typing import List
 

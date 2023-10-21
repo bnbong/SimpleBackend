@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# Member model을 정의한 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from sqlalchemy import Integer, String, Column
 
 from src.db._base import ModelBase

@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# FastAPI application과 runner을 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 from __future__ import annotations
 
 import uvicorn

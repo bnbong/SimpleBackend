@@ -1,3 +1,8 @@
+# --------------------------------------------------------------------------
+# Backend Application의 logger을 정의하는 모듈입니다.
+#
+# @author bnbong bbbong9@gmail.com
+# --------------------------------------------------------------------------
 import os
 import sys
 import logging
@@ -31,7 +36,7 @@ def init_logger(root_logger_name: str, app_settings: AppSettings) -> logging.Log
 
     # File handler
     log_file_path = "app.log"
-    if hasattr(app_settings, 'LOG_FILE_PATH'):
+    if hasattr(app_settings, "LOG_FILE_PATH"):
         log_file_path = app_settings.LOG_FILE_PATH
 
     # Ensure the log directory exists
