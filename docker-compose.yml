@@ -1,5 +1,21 @@
 version: '3.8'
 services:
+  elasticsearch:
+    image: elasticsearch:8.7.1
+    container_name: elasticsearch
+    mem_limit: 2024m
+    restart: always
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - ./es/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - fastapiserver_es_data:/usr/share/elasticsearch/data
+    networks:
+      - fastapiserver_efk_net
+
   fluentd:
     build: ./fluentd
     container_name: fluentd
@@ -16,22 +32,6 @@ services:
       - fastapiserver_tool_net
     volumes:
       - ./fluentd/conf/fluent.conf:/fluentd/etc/fluent.conf
-
-  elasticsearch:
-    image: elasticsearch:8.7.1
-    container_name: elasticsearch
-    mem_limit: 2024m
-    restart: always
-    ports:
-      - 9200:9200
-      - 9300:9300
-    environment:
-      - discovery.type=single-node
-    volumes:
-      - ./es/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - fastapiserver_es_data:/usr/share/elasticsearch/data
-    networks:
-      - fastapiserver_efk_net
 
   kibana:
     image: kibana:8.7.1
@@ -70,6 +70,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: "localhost:24224"
+        fluentd-async-connect: "true"
 
   mariadb:
     image: mariadb:11.0.2
@@ -83,7 +84,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
-      - 3306:3306
+      - 3307:3306
     volumes:
       - fastapiserver_mariadb_data:/var/lib/mysql  
     networks:
@@ -92,6 +93,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: "localhost:24224"
+        fluentd-async-connect: "true"
 
   uptime-kuma:
     image: louislam/uptime-kuma:1
@@ -109,6 +111,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: "localhost:24224"
+        fluentd-async-connect: "true"
 
   jenkins:
     build: ./jenkins
@@ -120,10 +123,14 @@ services:
     volumes:
       - fastapiserver_jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - fastapiserver_service_net
+      - fastapiserver_tool_net
     logging:
       driver: "fluentd"
       options:
         fluentd-address: "localhost:24224"
+        fluentd-async-connect: "true"
   
   heimdall:
     image: lscr.io/linuxserver/heimdall
@@ -137,19 +144,26 @@ services:
     volumes:
       - fastapiserver_heimdall_data:/config
     restart: unless-stopped
+    networks:
+      - fastapiserver_service_net
+      - fastapiserver_tool_net
     logging:
       driver: "fluentd"
       options:
         fluentd-address: "localhost:24224"
+        fluentd-async-connect: "true"
 
-  # # portainer service will be added later.
-  # portainer:
-  #   image: portainer/portainer-ce:alpine
-  #   container_name: portainer
-  #   restart: always
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #     - fastapiserver_portainer_data:/data
+   # portainer service will be added later.
+  portainer:
+    image: portainer/portainer-ce:alpine
+    container_name: portainer
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - fastapiserver_portainer_data:/data
+    networks:
+      - fastapiserver_service_net
+      - fastapiserver_tool_net
 
 networks:
   fastapiserver_tool_net:
@@ -174,5 +188,5 @@ volumes:
     external: true
   fastapiserver_es_data:
     external: true
-  # fastapiserver_portainer_data:
-  #   external: true
+  fastapiserver_portainer_data:
+    external: true
