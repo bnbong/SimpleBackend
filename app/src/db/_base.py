@@ -1,6 +1,6 @@
 from sqlalchemy import Column, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
-from sqlalchemy.orm import object_session
+from sqlalchemy.orm import object_session, Session
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
 Base: DeclarativeMeta = declarative_base()
@@ -22,5 +22,5 @@ class ModelBase(Base):
     )
 
     @property
-    def object_session(self) -> "Session":
+    def object_session(self) -> Session:
         return object_session(self)

@@ -1,6 +1,7 @@
+import os
+import sys
 import logging
 import logging.handlers
-import sys
 
 from src.core.settings import AppSettings
 
@@ -27,6 +28,19 @@ def init_logger(root_logger_name: str, app_settings: AppSettings) -> logging.Log
     stdout_handler = logging.StreamHandler(sys.stdout)
     stdout_handler.setLevel(app_logger_level)
     stdout_handler.setFormatter(logging.Formatter(LOGGING_FORMAT))
+
+    # File handler
+    log_file_path = "app.log"
+    if hasattr(app_settings, 'LOG_FILE_PATH'):
+        log_file_path = app_settings.LOG_FILE_PATH
+
+    # Ensure the log directory exists
+    os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+
+    file_handler = logging.FileHandler(log_file_path)
+    file_handler.setLevel(app_logger_level)
+    file_handler.setFormatter(logging.Formatter(LOGGING_FORMAT))
+    app_logger.addHandler(file_handler)
 
     app_logger.info("App logger is started.")
 

@@ -1,8 +1,12 @@
 import unittest
 
 from fastapi.testclient import TestClient
+from sqlalchemy.ext.declarative import declarative_base
+
+from helper import override_get_db, get_test_engine
+
 from src import create_app
-from src.db.database import Base, engine
+from src.db.database import engine, get_db, Base
 from src.core.settings import AppSettings
 
 
@@ -11,9 +15,10 @@ class TestMemberCreation(unittest.TestCase):
     def setUp(self):
         app_settings = AppSettings()
         self.app = create_app(app_settings)
+        self.app.dependency_overrides[get_db] = override_get_db
+        self.engine = get_test_engine()
+        Base.metadata.create_all(bind=self.engine)
         self.client = TestClient(self.app)
-
-        Base.metadata.create_all(bind=engine)
 
     def test_create_new_member(self):
         response = self.client.post("api/v1/member/", json={"name": "John Doe", "email": "john.doe@example.com"})

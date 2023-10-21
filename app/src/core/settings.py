@@ -11,7 +11,10 @@ class AppSettings(BaseSettings):
         default=True,
         description="True: DEBUG mode, False:: INFO mode",
     )
-
+    LOG_FILE_PATH: str = Field(
+        default="../logs/app.log",
+        description="Log file path",
+    )
     DEBUG_ALLOW_CORS_ALL_ORIGIN: bool = Field(
         default=True,
         description="If True, allow origins for CORS requests.",
@@ -34,6 +37,10 @@ class AppSettings(BaseSettings):
     DATABASE_URI: AnyUrl = Field(
         default="mysql+pymysql://bnbong:password@localhost:3306/fastapidb",
         description="MariaDB connection URI.",
+    )
+    TEST_DATABASE_URL: AnyUrl = Field(
+        default="mysql+pymysql://bnbong:password@localhost:3306/fastapidb_test",
+        description="MariaDB connection URI for test.",
     )
     DATABASE_OPTIONS: Dict[str, Any] = Field(
         default={
