@@ -51,6 +51,7 @@ def read_member_by_email(email: str, db: Session = Depends(database.get_db)):
 def read_members(
     skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)
 ):
+    log.info(f"Reading members with skip: {skip} and limit: {limit}")
     return get_members(db, skip=skip, limit=limit)
 
 

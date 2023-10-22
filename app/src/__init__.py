@@ -29,4 +29,12 @@ def create_app(app_settings: AppSettings) -> FastAPI:
 
     app.include_router(router)
 
+    @app.on_event("startup")
+    async def startup_event():
+        logger.info("Application startup")
+
+    @app.on_event("shutdown")
+    async def shutdown_event():
+        logger.info("Application shutdown")
+
     return app
