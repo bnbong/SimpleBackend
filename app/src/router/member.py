@@ -24,14 +24,24 @@ log = getLogger(__name__)
 member_router = APIRouter(prefix="/member")
 
 
-@member_router.post("/", response_model=schemas.Member)
+@member_router.post(
+    "/",
+    response_model=schemas.Member,
+    summary="Create a new member",
+    description="Create a new member with the given name and email",
+)
 def create_new_member(
     member: schemas.MemberCreate, db: Session = Depends(database.get_db)
 ):
     return create_member(db, member)
 
 
-@member_router.get("/{member_id}", response_model=schemas.Member)
+@member_router.get(
+    "/{member_id}",
+    response_model=schemas.Member,
+    summary="Read a member",
+    description="Read a member with the given id",
+)
 def read_member(member_id: int, db: Session = Depends(database.get_db)):
     db_member = get_member(db, member_id)
     if db_member is None:
@@ -39,7 +49,12 @@ def read_member(member_id: int, db: Session = Depends(database.get_db)):
     return db_member
 
 
-@member_router.get("/email/{email}", response_model=schemas.Member)
+@member_router.get(
+    "/email/{email}",
+    response_model=schemas.Member,
+    summary="Read a member by email",
+    description="Read a member with the given email",
+)
 def read_member_by_email(email: str, db: Session = Depends(database.get_db)):
     db_member = get_member_by_email(db, email)
     if db_member is None:
@@ -47,7 +62,12 @@ def read_member_by_email(email: str, db: Session = Depends(database.get_db)):
     return db_member
 
 
-@member_router.get("/", response_model=List[schemas.Member])
+@member_router.get(
+    "/",
+    response_model=List[schemas.Member],
+    summary="Read members",
+    description="Read members with the given skip and limit",
+)
 def read_members(
     skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)
 ):
@@ -55,7 +75,12 @@ def read_members(
     return get_members(db, skip=skip, limit=limit)
 
 
-@member_router.put("/{member_id}", response_model=schemas.Member)
+@member_router.put(
+    "/{member_id}",
+    response_model=schemas.Member,
+    summary="Update a member",
+    description="Update a member with the given id",
+)
 def update_existing_member(
     member_id: int, member: schemas.MemberUpdate, db: Session = Depends(database.get_db)
 ):
@@ -65,7 +90,12 @@ def update_existing_member(
     return updated_member
 
 
-@member_router.delete("/{member_id}", response_model=int)
+@member_router.delete(
+    "/{member_id}",
+    response_model=int,
+    summary="Delete a member",
+    description="Delete a member with the given id",
+)
 def delete_existing_member(member_id: int, db: Session = Depends(database.get_db)):
     delete_member(db, member_id)
     return member_id

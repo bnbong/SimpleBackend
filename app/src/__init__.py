@@ -13,6 +13,7 @@ from setuptools_scm import get_version
 from src.helper.logging import init_logger as _init_logger
 from src.router import router
 from src.core.settings import AppSettings
+from src.utils.documents import add_description_at_api_tags
 
 __version__ = get_version(root="../..", relative_to=__file__)
 
@@ -25,9 +26,15 @@ def init_logger(app_settings: AppSettings) -> None:
 
 
 def create_app(app_settings: AppSettings) -> FastAPI:
-    app = FastAPI()
+    app = FastAPI(
+        title="Simple Backend API",
+        description="Simple Backend Application using FastAPI",
+        version=__version__,
+    )
 
     app.include_router(router)
+
+    add_description_at_api_tags(app)
 
     @app.on_event("startup")
     async def startup_event():

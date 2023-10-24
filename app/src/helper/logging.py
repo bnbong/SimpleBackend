@@ -3,8 +3,6 @@
 #
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
-import os
-import sys
 import logging
 import logging.handlers
 

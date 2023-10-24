@@ -37,7 +37,8 @@ class TestMemberAPI(unittest.TestCase):
 
         # when
         response = self.client.post(
-            "api/v1/member/", json={"name": "Test User", "email": "testmail@example.com"}
+            "api/v1/member/",
+            json={"name": "Test User", "email": "testmail@example.com"},
         )
 
         # then
@@ -109,7 +110,8 @@ class TestMemberAPI(unittest.TestCase):
 
         # when
         response = self.client.put(
-            f"api/v1/member/{test_member_id}", json={"name": "Updated User Name"})
+            f"api/v1/member/{test_member_id}", json={"name": "Updated User Name"}
+        )
 
         # then
         data = response.json()
