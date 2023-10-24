@@ -7,44 +7,38 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
+from src.crud._base import (
+    create_object,
+    get_object,
+    get_objects,
+    delete_object,
+    update_object,
+)
 from src.db.models import Member
-from src.schemas.member import MemberCreate, MemberUpdate
+from src.schemas import member as schema
 
 
-def create_member(db: Session, member: MemberCreate) -> Member:
-    db_member = Member(**member.model_dump())
-
-    db.add(db_member)
-    db.commit()
-    db.refresh(db_member)
-    return db_member
+def create_member(db: Session, member: schema.MemberCreate) -> schema.Member:
+    return create_object(db, Member, member)
 
 
-def get_member(db: Session, member_id: int) -> Optional[Member]:
-    return db.query(Member).filter(Member.id == member_id).first()
+def get_member(db: Session, member_id: int) -> Optional[schema.Member]:
+    return get_object(db, Member, member_id)
 
 
-def get_member_by_email(db: Session, email: str) -> Optional[Member]:
+def get_member_by_email(db: Session, email: str) -> Optional[schema.Member]:
     return db.query(Member).filter(Member.email == email).first()
 
 
-def get_members(db: Session, skip: int = 0, limit: int = 100) -> List[Member]:
-    return db.query(Member).offset(skip).limit(limit).all()
+def get_members(db: Session, skip: int = 0, limit: int = 100) -> List[schema.Member]:
+    return get_objects(db, Member, skip, limit)
 
 
-def update_member(db: Session, member_id: int, member: MemberUpdate) -> Member:
-    db_member = db.query(Member).filter(Member.id == member_id).first()
-    update_data = member.model_dump(exclude_unset=True)
-    for key, value in update_data.items():
-        setattr(db_member, key, value)
-
-    db.add(db_member)
-    db.commit()
-    db.refresh(db_member)
-    return db_member
+def update_member(
+    db: Session, member_id: int, member: schema.MemberUpdate
+) -> schema.Member:
+    return update_object(db, Member, member_id, member)
 
 
 def delete_member(db: Session, member_id: int) -> int:
-    db.query(Member).filter(Member.id == member_id).delete()
-    db.commit()
-    return member_id
+    return delete_object(db, Member, member_id)

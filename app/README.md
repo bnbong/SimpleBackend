@@ -12,3 +12,8 @@ ERD will be uploaded later.
 - FastAPI (with SQLAlchemy, pymysql)
 - MariaDB
 - Docker
+
+## TODO
+
+- [ ] 비동기 API endpoint update
+- [ ] Dockerize

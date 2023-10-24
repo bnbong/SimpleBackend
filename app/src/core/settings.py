@@ -57,5 +57,5 @@ class AppSettings(BaseSettings):
         description="MariaDB option to create a connection.",
     )
 
-    class Config:
+    class ConfigDict:
         env_file = ".env"

@@ -8,6 +8,7 @@ from __future__ import annotations
 import logging
 
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 from setuptools_scm import get_version
 
 from src.helper.logging import init_logger as _init_logger
@@ -25,6 +26,15 @@ def init_logger(app_settings: AppSettings) -> None:
     _init_logger(f"fastapi-backend@{__version__}", app_settings)
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> None:
+    try:
+        logger.info("Application startup")
+        yield
+    finally:
+        logger.info("Application shutdown")
+
+
 def create_app(app_settings: AppSettings) -> FastAPI:
     app = FastAPI(
         title="Simple Backend API",
@@ -35,13 +45,5 @@ def create_app(app_settings: AppSettings) -> FastAPI:
     app.include_router(router)
 
     add_description_at_api_tags(app)
-
-    @app.on_event("startup")
-    async def startup_event():
-        logger.info("Application startup")
-
-    @app.on_event("shutdown")
-    async def shutdown_event():
-        logger.info("Application shutdown")
 
     return app

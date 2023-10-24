@@ -97,5 +97,7 @@ def update_existing_member(
     description="Delete a member with the given id",
 )
 def delete_existing_member(member_id: int, db: Session = Depends(database.get_db)):
-    delete_member(db, member_id)
-    return member_id
+    deleted_member_id = delete_member(db, member_id)
+    if deleted_member_id is None:
+        raise HTTPException(status_code=404, detail="Member not found")
+    return deleted_member_id

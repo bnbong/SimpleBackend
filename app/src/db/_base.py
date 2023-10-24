@@ -4,8 +4,9 @@
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
 from sqlalchemy import Column, DateTime, func
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import object_session, Session
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
 Base: DeclarativeMeta = declarative_base()

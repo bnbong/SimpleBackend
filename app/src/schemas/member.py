@@ -36,6 +36,16 @@ class Member(BaseModel):
     email: str = Field(
         ..., title="Member Email", description="The email address of the member."
     )
+    items: Optional[list] = Field(
+        None,
+        title="Member Items",
+        description="The items of the member. This field is only available when the member is read.",
+    )
+    timetables: Optional[list] = Field(
+        None,
+        title="Member TimeTables",
+        description="The timetables of the member. This field is only available when the member is read.",
+    )
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
