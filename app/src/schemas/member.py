@@ -3,6 +3,8 @@
 #
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
+from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -12,8 +14,8 @@ class MemberCreate(BaseModel):
 
 
 class MemberUpdate(BaseModel):
-    name: str
-    email: str
+    name: Optional[str] = None
+    email: Optional[str] = None
 
 
 class Member(BaseModel):
