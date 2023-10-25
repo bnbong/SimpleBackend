@@ -7,15 +7,9 @@ from logging import getLogger
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.crud.timetable import (
-    get_timetables,
-    get_timetable,
-    create_timetable,
-    update_timetable,
-    delete_timetable,
-)
+from src.crud import timetable as crud
 from src.db import database
 from src.schemas import timetable as schemas
 
@@ -30,11 +24,11 @@ timetable_router = APIRouter(prefix="/timetable")
     summary="Read time tables",
     description="Read time tables",
 )
-def read_timetables(
-    skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)
+async def read_timetables(
+    skip: int = 0, limit: int = 100, db: AsyncSession = Depends(database.get_db)
 ):
     log.info(f"Reading timetables with skip: {skip} and limit: {limit}")
-    return get_timetables(db, skip=skip, limit=limit)
+    return await crud.get_timetables(db, skip=skip, limit=limit)
 
 
 @timetable_router.get(
@@ -43,8 +37,10 @@ def read_timetables(
     summary="Read a time table",
     description="Read a time table with the given id",
 )
-def read_timetable(timetable_id: int, db: Session = Depends(database.get_db)):
-    db_timetable = get_timetable(db, timetable_id)
+async def read_timetable(
+    timetable_id: int, db: AsyncSession = Depends(database.get_db)
+):
+    db_timetable = await crud.get_timetable(db, timetable_id)
     if db_timetable is None:
         raise HTTPException(status_code=404, detail="TimeTable not found")
     return db_timetable
@@ -56,10 +52,10 @@ def read_timetable(timetable_id: int, db: Session = Depends(database.get_db)):
     summary="Create a new time table",
     description="Create a new time table with the given name, owner_id, start_date, and end_date",
 )
-def create_timetable(
-    timetable: schemas.TimeTableCreate, db: Session = Depends(database.get_db)
+async def create_timetable(
+    timetable: schemas.TimeTableCreate, db: AsyncSession = Depends(database.get_db)
 ):
-    return create_timetable(db, timetable)
+    return await crud.create_timetable(db, timetable)
 
 
 @timetable_router.put(
@@ -68,12 +64,12 @@ def create_timetable(
     summary="Update a time table",
     description="Update a time table with the given name, start_date, and end_date",
 )
-def update_timetable(
+async def update_timetable(
     timetable_id: int,
     timetable: schemas.TimeTableUpdate,
-    db: Session = Depends(database.get_db),
+    db: AsyncSession = Depends(database.get_db),
 ):
-    updated_timetable = update_timetable(db, timetable_id, timetable)
+    updated_timetable = await crud.update_timetable(db, timetable_id, timetable)
     if updated_timetable is None:
         raise HTTPException(status_code=404, detail="TimeTable not found")
     return updated_timetable
@@ -85,8 +81,10 @@ def update_timetable(
     summary="Delete a time table",
     description="Delete a time table with the given id",
 )
-def delete_timetable(timetable_id: int, db: Session = Depends(database.get_db)):
-    deleted_timetable_id = delete_timetable(db, timetable_id)
+async def delete_timetable(
+    timetable_id: int, db: AsyncSession = Depends(database.get_db)
+):
+    deleted_timetable_id = await crud.delete_timetable(db, timetable_id)
     if deleted_timetable_id is None:
         raise HTTPException(status_code=404, detail="TimeTable not found")
     return deleted_timetable_id

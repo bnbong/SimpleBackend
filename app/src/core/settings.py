@@ -1,6 +1,9 @@
 # --------------------------------------------------------------------------
 # Backend Application의 설정을 관리하는 파일입니다.
 #
+# 실제 환경에서는 .env 파일을 통해 설정을 관리하며,
+# 테스트 환경에서는 .env.test 파일을 통해 설정을 관리합니다.
+#
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
 from __future__ import annotations
@@ -40,12 +43,8 @@ class AppSettings(BaseSettings):
     )
 
     DATABASE_URI: AnyUrl = Field(
-        default="mysql+pymysql://bnbong:password@localhost:3306/fastapidb",
+        default="mysql+aiomysql://bnbong:password@localhost:3306/fastapidb",
         description="MariaDB connection URI.",
-    )
-    TEST_DATABASE_URL: AnyUrl = Field(
-        default="mysql+pymysql://bnbong:password@localhost:3306/fastapidb_test",
-        description="MariaDB connection URI for test.",
     )
     DATABASE_OPTIONS: Dict[str, Any] = Field(
         default={

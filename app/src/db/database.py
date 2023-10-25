@@ -3,8 +3,7 @@
 #
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
 from pydantic import AnyUrl
 
@@ -17,16 +16,14 @@ settings = AppSettings()
 SQLALCHEMY_DATABASE_URL: AnyUrl = str(settings.DATABASE_URI)
 engine_options = settings.DATABASE_OPTIONS
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, **engine_options)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base.metadata.create_all(bind=engine)
+engine = create_async_engine(SQLALCHEMY_DATABASE_URL, **engine_options)
 
 
 # Dependency
-def get_db():
-    db = SessionLocal()
+async def get_db():
+    db = None
     try:
+        db = AsyncSession(bind=engine)
         yield db
     finally:
-        db.close()
+        await db.close()

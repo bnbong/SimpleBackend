@@ -8,17 +8,11 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from src.db import database
 from src.schemas import member as schemas
-from src.crud.member import (
-    create_member,
-    get_member,
-    get_member_by_email,
-    get_members,
-    update_member,
-    delete_member,
-)
+from src.crud import member as crud
 
 log = getLogger(__name__)
 member_router = APIRouter(prefix="/member")
@@ -30,10 +24,10 @@ member_router = APIRouter(prefix="/member")
     summary="Create a new member",
     description="Create a new member with the given name and email",
 )
-def create_new_member(
-    member: schemas.MemberCreate, db: Session = Depends(database.get_db)
+async def create_new_member(
+    member: schemas.MemberCreate, db: AsyncSession = Depends(database.get_db)
 ):
-    return create_member(db, member)
+    return await crud.create_member(db, member)
 
 
 @member_router.get(
@@ -42,8 +36,8 @@ def create_new_member(
     summary="Read a member",
     description="Read a member with the given id",
 )
-def read_member(member_id: int, db: Session = Depends(database.get_db)):
-    db_member = get_member(db, member_id)
+async def read_member(member_id: int, db: AsyncSession = Depends(database.get_db)):
+    db_member = await crud.get_member(db, member_id)
     if db_member is None:
         raise HTTPException(status_code=404, detail="Member not found")
     return db_member
@@ -55,8 +49,8 @@ def read_member(member_id: int, db: Session = Depends(database.get_db)):
     summary="Read a member by email",
     description="Read a member with the given email",
 )
-def read_member_by_email(email: str, db: Session = Depends(database.get_db)):
-    db_member = get_member_by_email(db, email)
+async def read_member_by_email(email: str, db: AsyncSession = Depends(database.get_db)):
+    db_member = await crud.get_member_by_email(db, email)
     if db_member is None:
         raise HTTPException(status_code=404, detail="Member not found")
     return db_member
@@ -68,11 +62,11 @@ def read_member_by_email(email: str, db: Session = Depends(database.get_db)):
     summary="Read members",
     description="Read members with the given skip and limit",
 )
-def read_members(
-    skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db)
+async def read_members(
+    skip: int = 0, limit: int = 100, db: AsyncSession = Depends(database.get_db)
 ):
     log.info(f"Reading members with skip: {skip} and limit: {limit}")
-    return get_members(db, skip=skip, limit=limit)
+    return await crud.get_members(db, skip=skip, limit=limit)
 
 
 @member_router.put(
@@ -81,10 +75,12 @@ def read_members(
     summary="Update a member",
     description="Update a member with the given id",
 )
-def update_existing_member(
-    member_id: int, member: schemas.MemberUpdate, db: Session = Depends(database.get_db)
+async def update_existing_member(
+    member_id: int,
+    member: schemas.MemberUpdate,
+    db: AsyncSession = Depends(database.get_db),
 ):
-    updated_member = update_member(db, member_id, member)
+    updated_member = await crud.update_member(db, member_id, member)
     if updated_member is None:
         raise HTTPException(status_code=404, detail="Member not found")
     return updated_member
@@ -96,8 +92,10 @@ def update_existing_member(
     summary="Delete a member",
     description="Delete a member with the given id",
 )
-def delete_existing_member(member_id: int, db: Session = Depends(database.get_db)):
-    deleted_member_id = delete_member(db, member_id)
+async def delete_existing_member(
+    member_id: int, db: AsyncSession = Depends(database.get_db)
+):
+    deleted_member_id = await crud.delete_member(db, member_id)
     if deleted_member_id is None:
         raise HTTPException(status_code=404, detail="Member not found")
     return deleted_member_id

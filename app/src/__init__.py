@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from setuptools_scm import get_version
 
+from src.db.database import engine, Base
 from src.helper.logging import init_logger as _init_logger
 from src.router import router
 from src.core.settings import AppSettings
@@ -27,9 +28,12 @@ def init_logger(app_settings: AppSettings) -> None:
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> None:
+async def lifespan(app: FastAPI):
     try:
         logger.info("Application startup")
+        logger.info("Create connection and setting up database")
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
         yield
     finally:
         logger.info("Application shutdown")
@@ -40,6 +44,7 @@ def create_app(app_settings: AppSettings) -> FastAPI:
         title="Simple Backend API",
         description="Simple Backend Application using FastAPI",
         version=__version__,
+        lifespan=lifespan,
     )
 
     app.include_router(router)
