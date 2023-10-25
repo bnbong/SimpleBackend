@@ -3,7 +3,9 @@
 #
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
-from sqlalchemy.orm import Session
+from typing import List, Optional
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud._base import (
     create_object,
@@ -13,24 +15,44 @@ from src.crud._base import (
     update_object,
 )
 from src.db.models import TimeTable
-from src.schemas.timetable import TimeTableCreate
+from src.schemas import timetable as schema
 
 
-def create_timetable(db: Session, timetable: TimeTableCreate) -> TimeTable:
-    return create_object(db, TimeTable, timetable)
+async def create_timetable(
+    db: AsyncSession, timetable: schema.TimeTableCreate
+) -> schema.TimeTable:
+    return await create_object(
+        db=db, model=TimeTable, obj=timetable, response_model=schema.TimeTable
+    )
 
 
-def get_timetable(db: Session, timetable_id: int) -> TimeTable:
-    return get_object(db, TimeTable, timetable_id)
+async def get_timetable(
+    db: AsyncSession, timetable_id: int
+) -> Optional[schema.TimeTable]:
+    return await get_object(
+        db=db, model=TimeTable, model_id=timetable_id, response_model=schema.TimeTable
+    )
 
 
-def get_timetables(db: Session, skip: int = 0, limit: int = 100) -> TimeTable:
-    return get_objects(db, TimeTable, skip, limit)
+async def get_timetables(
+    db: AsyncSession, skip: int = 0, limit: int = 100
+) -> List[schema.TimeTable]:
+    return await get_objects(
+        db=db, model=TimeTable, response_model=schema.TimeTable, skip=skip, limit=limit
+    )
 
 
-def update_timetable(db: Session, timetable_id: int, timetable: TimeTable) -> TimeTable:
-    return update_object(db, TimeTable, timetable_id, timetable)
+async def update_timetable(
+    db: AsyncSession, timetable_id: int, timetable: schema.TimeTableUpdate
+) -> Optional[schema.TimeTable]:
+    return await update_object(
+        db=db,
+        model=TimeTable,
+        model_id=timetable_id,
+        obj=timetable,
+        response_model=schema.TimeTable,
+    )
 
 
-def delete_timetable(db: Session, timetable_id: int) -> int:
-    return delete_object(db, TimeTable, timetable_id)
+async def delete_timetable(db: AsyncSession, timetable_id: int) -> Optional[int]:
+    return await delete_object(db=db, model=TimeTable, model_id=timetable_id)

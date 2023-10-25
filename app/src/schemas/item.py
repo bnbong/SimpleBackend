@@ -7,6 +7,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from src.db.models import Item
+
 
 class ItemCreate(BaseModel):
     name: str = Field(..., title="Item Name", description="The name of the item.")
@@ -27,7 +29,7 @@ class ItemUpdate(BaseModel):
     )
 
 
-class Item(BaseModel):
+class Item(BaseModel):  # type: ignore
     id: int = Field(
         ..., title="Item ID", description="The unique identifier of the item."
     )
@@ -36,4 +38,5 @@ class Item(BaseModel):
     owner_id: int = Field(..., title="Item Owner", description="The owner of the item.")
 
     class ConfigDict:
+        orm_model = Item
         from_attributes = True

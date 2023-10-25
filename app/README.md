@@ -13,7 +13,7 @@ ERD will be uploaded later.
 - MariaDB
 - Docker
 
-## TODO
+## TODO[database.py](src%2Fdb%2Fdatabase.py)
 
-- [ ] 비동기 API endpoint update
+- [X] 비동기 API endpoint update
 - [ ] Dockerize

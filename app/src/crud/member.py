@@ -5,7 +5,8 @@
 # --------------------------------------------------------------------------
 from typing import List, Optional
 
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.crud._base import (
     create_object,
@@ -18,27 +19,45 @@ from src.db.models import Member
 from src.schemas import member as schema
 
 
-def create_member(db: Session, member: schema.MemberCreate) -> schema.Member:
-    return create_object(db, Member, member)
+async def create_member(db: AsyncSession, member: schema.MemberCreate) -> schema.Member:
+    return await create_object(
+        db=db, model=Member, obj=member, response_model=schema.Member
+    )
 
 
-def get_member(db: Session, member_id: int) -> Optional[schema.Member]:
-    return get_object(db, Member, member_id)
+async def get_member(db: AsyncSession, member_id: int) -> Optional[schema.Member]:
+    return await get_object(
+        db=db, model=Member, model_id=member_id, response_model=schema.Member
+    )
 
 
-def get_member_by_email(db: Session, email: str) -> Optional[schema.Member]:
-    return db.query(Member).filter(Member.email == email).first()
+async def get_member_by_email(db: AsyncSession, email: str) -> Optional[schema.Member]:
+    result = await db.execute(select(Member).filter(Member.email == email))  # type: ignore
+    member = result.scalar_one_or_none()
+    if member:
+        return schema.Member.model_validate(member.__dict__)
+    return None
 
 
-def get_members(db: Session, skip: int = 0, limit: int = 100) -> List[schema.Member]:
-    return get_objects(db, Member, skip, limit)
+async def get_members(
+    db: AsyncSession, skip: int = 0, limit: int = 100
+) -> List[schema.Member]:
+    return await get_objects(
+        db=db, model=Member, response_model=schema.Member, skip=skip, limit=limit
+    )
 
 
-def update_member(
-    db: Session, member_id: int, member: schema.MemberUpdate
-) -> schema.Member:
-    return update_object(db, Member, member_id, member)
+async def update_member(
+    db: AsyncSession, member_id: int, member: schema.MemberUpdate
+) -> Optional[schema.Member]:
+    return await update_object(
+        db=db,
+        model=Member,
+        model_id=member_id,
+        obj=member,
+        response_model=schema.Member,
+    )
 
 
-def delete_member(db: Session, member_id: int) -> int:
-    return delete_object(db, Member, member_id)
+async def delete_member(db: AsyncSession, member_id: int) -> Optional[int]:
+    return await delete_object(db=db, model=Member, model_id=member_id)
