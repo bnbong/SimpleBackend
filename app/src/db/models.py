@@ -10,7 +10,7 @@ from src.db._base import ModelBase
 
 
 class Member(ModelBase):
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(length=255), index=True)
     email = Column(String(length=255), unique=True, index=True)
 
@@ -19,7 +19,7 @@ class Member(ModelBase):
 
 
 class Item(ModelBase):
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(length=255), index=True)
     price = Column(Integer, index=True)
     owner_id = Column(Integer, ForeignKey("member.id"))
@@ -28,7 +28,7 @@ class Item(ModelBase):
 
 
 class TimeTable(ModelBase):
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     index = Column(String(length=1024), index=True)
     owner_id = Column(Integer, ForeignKey("member.id"))
     start_date = Column(DateTime(timezone=True))

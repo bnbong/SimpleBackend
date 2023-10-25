@@ -1,135 +1,124 @@
+# TODO: Failure test case 추가
 # --------------------------------------------------------------------------
 # Member의 testcase를 정의한 모듈입니다.
 #
 # @author bnbong bbbong9@gmail.com
 # --------------------------------------------------------------------------
-import unittest
+import pytest_asyncio
 
-from fastapi.testclient import TestClient
-
-from helper import override_get_db, get_test_engine
-
-from src import create_app
-from src.db.database import get_db, Base
-from src.core.settings import AppSettings
+from httpx import AsyncClient
 
 
-class TestMemberAPI(unittest.TestCase):
-    def setUp(self):
-        app_settings = AppSettings()
-        self.app = create_app(app_settings)
-        self.app.dependency_overrides[get_db] = override_get_db
-        self.engine = get_test_engine()
-        Base.metadata.create_all(bind=self.engine)
-        self.client = TestClient(self.app)
+async def _create_member(app_client: AsyncClient, name: str, email: str):
+    """Helper function to create a member and return the id"""
+    response = await app_client.post(
+        "api/v1/member/", json={"name": name, "email": email}
+    )
+    return response.json()
 
-        self.test_member = self.create_member("John Doe", "john.doe@example.com")
 
-    def create_member(self, name: str, email: str):
-        """Helper function to create a member and return the id"""
-        response = self.client.post(
-            "api/v1/member/", json={"name": name, "email": email}
+class TestMemberAPI:
+    @pytest_asyncio.fixture(autouse=True)
+    async def setup(self, app_client: AsyncClient):
+        self.test_user = await _create_member(
+            app_client, "John Doe", "test@example.com"
         )
-        return response.json()
 
-    def test_create_new_member(self):
+    async def test_create_member(self, app_client: AsyncClient):
         # given
 
         # when
-        response = self.client.post(
+        response = await app_client.post(
             "api/v1/member/",
-            json={"name": "Test User", "email": "testmail@example.com"},
+            json={"name": "Test User", "email": "newuser@testmail.com"},
         )
 
         # then
         data = response.json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data["name"], "Test User")
-        self.assertEqual(data["email"], "testmail@example.com")
+        assert response.status_code == 200
+        assert data["name"] == "Test User"
+        assert data["email"] == "newuser@testmail.com"
 
-    def test_read_member(self):
+    async def test_read_member(self, app_client: AsyncClient):
         # given
-        test_member_id = self.test_member["id"]
 
         # when
-        response = self.client.get(f"api/v1/member/{test_member_id}")
+        response = await app_client.get(f"api/v1/member/{self.test_user['id']}")
 
         # then
         data = response.json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data["name"], "John Doe")
-        self.assertEqual(data["email"], "john.doe@example.com")
+        assert response.status_code == 200
+        assert data["name"] == "John Doe"
+        assert data["email"] == "test@example.com"
 
-    def test_read_member_by_email(self):
-        # given
-        test_member_email = self.test_member["email"]
-
-        # when
-        response = self.client.get(f"api/v1/member/email/{test_member_email}")
-
-        # then
-        data = response.json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data["name"], "John Doe")
-        self.assertEqual(data["email"], "john.doe@example.com")
-
-    def test_read_members(self):
-        # given
-        self.create_member("Test User 1", "test1@testmail.com")
-        self.create_member("Test User 2", "test2@testmail.com")
-
-        # when
-        response = self.client.get("api/v1/member/")
-
-        # then
-        data = response.json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(data), 3)
-
-    def test_read_members_with_skip_and_limit(self):
+    async def test_read_members(self, app_client: AsyncClient):
         # given
         for i in range(10):
-            self.create_member(f"Test User {i}", f"test{i}@testmail.com")
+            await _create_member(
+                app_client, f"Test User {i}", f"testmail{i}@example.com"
+            )
 
         # when
-        response = self.client.get("api/v1/member/?skip=5&limit=5")
-        response_2 = self.client.get("api/v1/member/?limit=5")
+        response = await app_client.get("api/v1/member/")
+
+        # then
+        data = response.json()
+        assert response.status_code == 200
+        assert len(data) == 11
+
+    async def test_read_members_with_skip_and_limit(self, app_client: AsyncClient):
+        # given
+        for i in range(10):
+            await _create_member(
+                app_client, f"Test User {i}", f"testmail{i}@example.com"
+            )
+
+        # when
+        response = await app_client.get("api/v1/member/?skip=5&limit=5")
+        response_2 = await app_client.get("api/v1/member/?limit=5")
 
         # then
         data = response.json()
         data_2 = response_2.json()
+        assert response.status_code == 200
+        assert len(data) == 5
+        assert response_2.status_code == 200
+        assert len(data_2) == 5
+        assert data != data_2
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(data), 5)
-        self.assertEqual(response_2.status_code, 200)
-        self.assertEqual(len(data_2), 5)
-
-    def test_update_existing_member(self):
+    async def test_read_member_by_email(self, app_client: AsyncClient):
         # given
-        test_member_id = self.test_member["id"]
 
         # when
-        response = self.client.put(
-            f"api/v1/member/{test_member_id}", json={"name": "Updated User Name"}
+        response = await app_client.get("api/v1/member/email/test@example.com")
+
+        # then
+        data = response.json()
+        assert response.status_code == 200
+        assert data["name"] == "John Doe"
+        assert data["email"] == "test@example.com"
+
+    async def test_update_member(self, app_client: AsyncClient):
+        # given
+
+        # when
+        response = await app_client.put(
+            f"api/v1/member/{self.test_user['id']}", json={"name": "Updated User Name"}
         )
 
         # then
         data = response.json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data["name"], "Updated User Name")
-        self.assertEqual(data["email"], "john.doe@example.com")
+        assert response.status_code == 200
+        assert data["name"] == "Updated User Name"
+        assert data["email"] == "test@example.com"
 
-    def test_delete_member(self):
+    async def test_delete_member(self, app_client: AsyncClient):
         # given
-        test_member_id = self.test_member["id"]
 
         # when
-        response = self.client.delete(f"api/v1/member/{test_member_id}")
+        response = await app_client.delete(f"api/v1/member/{self.test_user['id']}")
 
         # then
         data = response.json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(data, test_member_id)
-
-    def tearDown(self):
-        Base.metadata.drop_all(bind=self.engine)
+        assert response.status_code == 200
+        assert data == self.test_user["id"]

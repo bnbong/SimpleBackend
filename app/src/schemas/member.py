@@ -7,6 +7,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from src.db.models import Member
+
 
 class MemberCreate(BaseModel):
     name: str = Field(..., title="Member Name", description="The name of the member.")
@@ -28,7 +30,7 @@ class MemberUpdate(BaseModel):
     )
 
 
-class Member(BaseModel):
+class Member(BaseModel):  # type: ignore
     id: int = Field(
         ..., title="Member ID", description="The unique identifier of the member."
     )
@@ -48,4 +50,5 @@ class Member(BaseModel):
     )
 
     class ConfigDict:
+        orm_model = Member
         from_attributes = True
