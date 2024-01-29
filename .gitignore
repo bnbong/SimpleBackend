@@ -18,3 +18,8 @@ app/.idea
 
 # logs
 logs/
+
+# DS_Store
+.DS_Store
+*/.DS_Store
+*/.DS_Store?

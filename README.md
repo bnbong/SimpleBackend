@@ -1,12 +1,16 @@
 # SimpleBackend
-Python based simple CRUD Backend server using EFK stack and Jenkins.
+Simple server using EFK stack and Jenkins.
 
 This server was build for the purpose of learning backend architecture and CI/CD.
-Other features can be added later(not sure).
+
+All architecture build scripts are configured based on the ARM server environment.
+
+This project includes a simple Python API server application.
+
+You can check API server spec below.
 
 # Backend Architecture
  - CI/CD - Jenkins
- - Backend - Python (FastAPI)
  - Reverse Proxy - Nginx
  - Database - MariaDB
  - Container - Docker
@@ -16,9 +20,9 @@ Other features can be added later(not sure).
 # CheckLists
 
 - [ ] ElasticSearch 데이터 생명 주기 설정
-- [ ] SSL 인증서 발급 및 Https 적용
+- [X] SSL 인증서 발급 및 Https 적용
 - [ ] API 문서 작성 및 스키마 작성
-- [ ] Jenkins CI/CD 파이프라인 작성 및 확인
+- [X] Jenkins CI/CD 파이프라인 작성 및 확인
 - [ ] Scheduler worker 확인
 
 # Application Documents
