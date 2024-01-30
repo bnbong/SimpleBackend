@@ -37,7 +37,7 @@ API 서버가 정상적으로 작동이 되는지 다음 URL에 요청을 보내
 curl http://localhost:8000/api/v1/ping
 ```
 
-## TODO[database.py](src%2Fdb%2Fdatabase.py)
+## TODO
 
 - [X] 비동기 API endpoint update
 - [X] Dockerize
